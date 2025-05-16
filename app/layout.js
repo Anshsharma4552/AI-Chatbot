@@ -1,9 +1,11 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "./_components/AppSidebar";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Provider } from "@radix-ui/react-tooltip";
+import { Provider as TooltipProvider } from "@radix-ui/react-tooltip";
+import UserProvider from "./provider"; // Update this path to match your actual file structure
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -29,9 +31,11 @@ export default function RootLayout({ children }) {
           <SidebarProvider>
             <AppSidebar/>
             <SidebarTrigger/>
-            <Provider>
-              {children}
-            </Provider>
+            <UserProvider>
+              <TooltipProvider>
+                {children}
+              </TooltipProvider>
+            </UserProvider>
           </SidebarProvider>
         </body>
       </html>

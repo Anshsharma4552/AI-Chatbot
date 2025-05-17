@@ -16,25 +16,30 @@ import { AIModelsOption } from '@/services/Shared'
 import { supabase } from '@/services/supabase'
 import { useUser } from '@clerk/nextjs'
 import {v4 as uuidv4} from 'uuid';
+import { useRouter } from 'next/navigation'
 
 
 function ChatInputBox() {
+
     const [userSearchInput,setUserSearchInput]=useState()
     const [searchType,setSearchType]=useState('search')
     const {user}=useUser();
     const[loading,setLoading]=useState(false)
+    const router=useRouter()
     const onSearchQuery=async()=>{
-        const libid=uuidv4();
+        setLoading(true)
+        const libId=uuidv4();
         const {data}=await supabase.from('library').insert([
             {
                 searchInput:userSearchInput,
                 userEmail:user?.primaryEmailAddress?.emailAddress,
                 type:searchType,
-                libid:libid
+                libId:libId
             }
         ]).select()
         setLoading(false)
         //redirect to new screen
+        router.push('/search/'+libId)
         console.log(data[0])
     }
     return (

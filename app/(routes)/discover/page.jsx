@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Search, Atom, TrendingUp, BookOpen, Code, Lightbulb, Globe, Zap } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/services/supabase'
 import { useUser } from '@clerk/nextjs'
 import { v4 as uuidv4 } from 'uuid'
+import axios from 'axios'
 
 const trendingTopics = [
   { title: "Latest AI developments", icon: Zap, type: "research" },
@@ -37,12 +37,12 @@ function Discover() {
     const libId = uuidv4()
     
     try {
-      await supabase.from('library').insert([{
+      await axios.post('/api/library', {
         searchInput: topic.title,
         userEmail: user.primaryEmailAddress.emailAddress,
         type: topic.type,
         libId: libId
-      }])
+      })
       
       router.push(`/search/${libId}`)
     } catch (error) {
@@ -59,12 +59,12 @@ function Discover() {
     const libId = uuidv4()
     
     try {
-      await supabase.from('library').insert([{
+      await axios.post('/api/library', {
         searchInput: prompt,
         userEmail: user.primaryEmailAddress.emailAddress,
         type: 'search',
         libId: libId
-      }])
+      })
       
       router.push(`/search/${libId}`)
     } catch (error) {

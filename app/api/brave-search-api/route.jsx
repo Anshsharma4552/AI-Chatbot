@@ -12,9 +12,17 @@ export async function POST(req) {
         // Customize prompt based on search type
         let prompt = searchInput;
         if (searchType === 'research') {
-            prompt = `Provide a comprehensive research-based answer for: ${searchInput}. Include key facts, statistics, and detailed explanations. Structure your response with clear headings and bullet points where appropriate.`;
+            prompt = `Answer this research question in simple bullet points: ${searchInput}. Use clear, short sentences. Format as:
+• Point 1
+• Point 2
+• Point 3
+Use bullet points (•) not asterisks (*). Keep it easy to understand.`;
         } else {
-            prompt = `Answer this question clearly and concisely: ${searchInput}. Provide helpful information and practical insights.`;
+            prompt = `Answer this question in simple bullet points: ${searchInput}. Use:
+• Short, clear points
+• Easy words
+• Simple explanations
+Use bullet points (•) not asterisks (*). Make it easy to read.`;
         }
 
         const result = await axios.post(

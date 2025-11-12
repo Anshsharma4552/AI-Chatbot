@@ -2,58 +2,50 @@
 import React from 'react'
 import { useState } from 'react'  
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowRight, ArrowUp, Atom, AudioLines, Cpu, FileUp, Globe, Mic, Paperclip, SearchCheck, Share2 } from 'lucide-react'
+import { ArrowRight, Atom, AudioLines, SearchCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { AIModelsOption } from '@/services/Shared'
-import { supabase } from '@/services/supabase'
-import { useUser } from '@clerk/nextjs'
-import {v4 as uuidv4} from 'uuid';
 import { useRouter } from 'next/navigation'
 
 
 function ChatInputBox() {
-
-    const [userSearchInput,setUserSearchInput]=useState()
+    const [userSearchInput,setUserSearchInput]=useState('')
     const [searchType,setSearchType]=useState('search')
-    const {user}=useUser();
-    const[loading,setLoading]=useState(false)
-    const router=useRouter()
-    const onSearchQuery=async()=>{
-        setLoading(true)
-        const libId=uuidv4();
-        const {data}=await supabase.from('library').insert([
-            {
-                searchInput:userSearchInput,
-                userEmail:user?.primaryEmailAddress?.emailAddress,
-                type:searchType,
-                libId:libId
-            }
-        ]).select()
-        setLoading(false)
-        //redirect to new screen
-        router.push('/search/'+libId)
-        console.log(data[0])
+    const router = useRouter()
+    
+    const onSearchQuery=()=>{
+        if (!userSearchInput.trim()) return
+        
+        // Save to localStorage for library
+        const searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]')
+        const newSearch = {
+            id: Date.now(),
+            searchInput: userSearchInput,
+            type: searchType,
+            createdAt: new Date().toISOString()
+        }
+        searchHistory.unshift(newSearch)
+        localStorage.setItem('searchHistory', JSON.stringify(searchHistory.slice(0, 50)))
+        
+        const params = new URLSearchParams({
+            q: userSearchInput,
+            type: searchType
+        })
+        
+        router.push(`/answer?${params.toString()}`)
     }
     return (
-        <div className='flex flex-col h-screen items-center justify-center'>
+        <div className='flex flex-col h-screen items-center justify-center p-6'>
             <h1 className="text-3xl font-bold text-cyan-700 m-1">Botato</h1>
             <p className="text-xl text-cyan-700 mb-6">Your AI Bot</p>
+            
             <div className='p-2 w-full max-w-2xl border rounded-2xl mt-5'>
-                
                 <div className='flex justify-between items-end'>
                     <Tabs defaultValue="Search" className="w-full md:w-[400px]">
                         <TabsContent value="Search">
                             <input 
                                 type='text' 
                                 placeholder='Ask Anything' 
+                                value={userSearchInput}
                                 onChange={(e)=>setUserSearchInput(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && userSearchInput && onSearchQuery()}
                                 className='w-full p-4 outline-none'
@@ -63,6 +55,7 @@ function ChatInputBox() {
                             <input 
                                 type='text' 
                                 placeholder='Research Anything'
+                                value={userSearchInput}
                                 onChange={(e)=>setUserSearchInput(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && userSearchInput && onSearchQuery()}
                                 className='w-full p-4 outline-none'
@@ -73,69 +66,19 @@ function ChatInputBox() {
                             <TabsTrigger value="Research" className={'text-cyan-700'} onClick={()=>setSearchType('research')}> <Atom/> Research</TabsTrigger>
                         </TabsList>
                     </Tabs>
-                    <div className='flex gap-4 items-center'>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant={'ghost'}>
-                                    <Cpu className='text-gray-500 h-5 w-5'/>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                {AIModelsOption.map((model,index)=>(
-                                    <DropdownMenuItem key={index} className={'hover:bg-gray-200'}>
-                                        <div className='mb-1'>
-                                            <h2 className='text-sm'>{model.name}</h2>
-                                            <p className='text-xs text-gray-600'>{model.desc}</p>
-                                        </div>
-                                    </DropdownMenuItem>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        <Button variant={'ghost'}>
-                            <Globe className='text-gray-500 h-5 w-5'/>
-                        </Button>
-
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant={'ghost'}>
-                                    <Paperclip className='text-gray-500 h-5 w-5'/>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuItem asChild>
-                                    <div className="flex flex-col gap-1 w-full">
-                                        <div className="flex items-center gap-2 text-sm p-1 hover:bg-gray-200 rounded">
-                                            <FileUp /> Local files
-                                        </div>
-                                        <div className="flex items-center gap-2 text-sm p-1 hover:bg-gray-200 rounded">
-                                            <Share2 /> Connect files
-                                        </div>
-                                    </div>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                
-                        <Button variant={'ghost'}>
-                            <Mic className='text-gray-500 h-5 w-5'/>
-                        </Button>
-                        <Button 
-                            className={'bg-cyan-900 hover:bg-cyan-700'} 
-                            onClick={() => {
-                                userSearchInput ? onSearchQuery() : null
-                            }}
-                            disabled={loading || !userSearchInput}
-                        >
-                            {loading ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                            ) : !userSearchInput ? (
-                                <AudioLines className='text-white h-5 w-5'/>
-                            ) : (
-                                <ArrowRight className='text-white h-5 w-5'/>
-                            )}
-                        </Button>
-                    </div>
+                    
+                    <Button 
+                        className={'bg-cyan-900 hover:bg-cyan-700'} 
+                        onClick={onSearchQuery}
+                        disabled={!userSearchInput.trim()}
+                    >
+                        {!userSearchInput ? (
+                            <AudioLines className='text-white h-5 w-5'/>
+                        ) : (
+                            <ArrowRight className='text-white h-5 w-5'/>
+                        )}
+                    </Button>
                 </div>
-
             </div>
         </div>
     )

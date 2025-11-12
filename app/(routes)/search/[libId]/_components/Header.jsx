@@ -11,7 +11,7 @@ function Header({searchInputRecord}) {
         <UserButton/>
         <div className='flex gap-1 items-center'>
             <Clock className='h-5 w-5 text-gray-500'/>
-            <h2 className='text-sm text-gray-500'>{ moment( searchInputRecord?.created_at).fromNow()}</h2>
+            <h2 className='text-sm text-gray-500'>{moment(searchInputRecord?.createdAt).fromNow()}</h2>
         </div>
         </div>
         <h2 className='line-clamp-1 max-md:'>{searchInputRecord?.searchInput}</h2>

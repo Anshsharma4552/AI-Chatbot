@@ -1,26 +1,26 @@
 "use client"
-import { supabase } from '@/services/supabase'
 import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import Header from './_components/Header'
 import DisplayResult from './_components/DisplayResult'
-
+import axios from 'axios'
 
 function SearchQueryResult() {
     const {libId}=useParams()
     const [searchInputRecord,setSearchInputRecord]=useState()
+    
     useEffect(()=>{
         GetSearchQueryRecord()
-    },[])
+    },[libId])
+    
     const GetSearchQueryRecord=async()=>{
-        let { data: library, error } = await supabase
-            .from('library')
-            .select('*')
-            .eq('libId',libId)
-        
-        if (library && library.length > 0) {
-            console.log(library[0])
-            setSearchInputRecord(library[0])
+        try {
+            const response = await axios.get(`/api/library?libId=${libId}`)
+            if (response.data) {
+                setSearchInputRecord(response.data)
+            }
+        } catch (error) {
+            console.error('Error fetching record:', error)
         }
     }
     

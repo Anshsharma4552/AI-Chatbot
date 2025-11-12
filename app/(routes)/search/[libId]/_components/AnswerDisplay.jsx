@@ -19,15 +19,19 @@ function AnswerDisplay({ searchInputRecord }) {
   const generateAnswer = async () => {
     setLoading(true)
     try {
+      console.log('Generating answer for:', searchInputRecord)
       const result = await axios.post('/api/brave-search-api', {
         searchInput: searchInputRecord?.searchInput,
         searchType: searchInputRecord?.type
       })
       
+      console.log('API Response:', result.data)
       const generatedText = result.data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No answer generated'
+      console.log('Generated text:', generatedText)
       setAnswer(generatedText)
     } catch (error) {
       console.error('Error generating answer:', error)
+      console.error('Error details:', error.response?.data)
       setAnswer('Sorry, I encountered an error while generating the answer.')
     } finally {
       setLoading(false)
@@ -72,7 +76,9 @@ function AnswerDisplay({ searchInputRecord }) {
     <div className="mt-6">
       <div className="bg-gray-50 rounded-lg p-6 border">
         <div className="prose max-w-none">
-          {formatAnswer(answer)}
+          {answer ? formatAnswer(answer) : (
+            <p className="text-gray-500">No answer available. Please try again.</p>
+          )}
         </div>
         
         <div className="flex items-center gap-2 mt-6 pt-4 border-t">

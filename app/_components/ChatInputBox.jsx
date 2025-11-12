@@ -51,14 +51,22 @@ function ChatInputBox() {
                 <div className='flex justify-between items-end'>
                     <Tabs defaultValue="Search" className="w-full md:w-[400px]">
                         <TabsContent value="Search">
-                            <input type='text' placeholder='Ask Anything' 
-                            onChange={(e)=>setUserSearchInput(e.target.value)}
-                            className='w-full p-4 outline-none'/>
+                            <input 
+                                type='text' 
+                                placeholder='Ask Anything' 
+                                onChange={(e)=>setUserSearchInput(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && userSearchInput && onSearchQuery()}
+                                className='w-full p-4 outline-none'
+                            />
                         </TabsContent>
                         <TabsContent value="Research">
-                            <input type='text' placeholder='Research Anything'
-                            onChange={(e)=>setUserSearchInput(e.target.value)} 
-                            className='w-full p-4 outline-none'/>
+                            <input 
+                                type='text' 
+                                placeholder='Research Anything'
+                                onChange={(e)=>setUserSearchInput(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && userSearchInput && onSearchQuery()}
+                                className='w-full p-4 outline-none'
+                            />
                         </TabsContent>
                         <TabsList>
                             <TabsTrigger value="Search" className={'text-cyan-700'} onClick={()=>setSearchType('search')}> <SearchCheck/> Search</TabsTrigger>
@@ -110,11 +118,20 @@ function ChatInputBox() {
                         <Button variant={'ghost'}>
                             <Mic className='text-gray-500 h-5 w-5'/>
                         </Button>
-                        <Button className={'bg-cyan-900 hover:bg-cyan-700'} onClick={()=>{
-                            userSearchInput ? onSearchQuery() : null
-                        }}>
-                            {!userSearchInput ?<AudioLines className='text-white h-5 w-5'/>
-                            :<ArrowRight className='text-white h-5 w-5' disabled={loading}/>}
+                        <Button 
+                            className={'bg-cyan-900 hover:bg-cyan-700'} 
+                            onClick={() => {
+                                userSearchInput ? onSearchQuery() : null
+                            }}
+                            disabled={loading || !userSearchInput}
+                        >
+                            {loading ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                            ) : !userSearchInput ? (
+                                <AudioLines className='text-white h-5 w-5'/>
+                            ) : (
+                                <ArrowRight className='text-white h-5 w-5'/>
+                            )}
                         </Button>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { LucideImage, LucideList, LucideSparkles, LucideVideo } from 'lucide-react'
 import AnswerDisplay from './AnswerDisplay'
+
 const tabs=[
     {
         label:'Answer',
@@ -20,6 +21,7 @@ const tabs=[
         badge:10
     }
 ]
+
 function DisplayResult({searchInputRecord}) {
     const [activeTab,setActiveTab]=useState('Answer')
   return (
@@ -51,9 +53,25 @@ function DisplayResult({searchInputRecord}) {
             </div>
         </div>
         <div>
-            {activeTab=='Answer'?
-            <AnswerDisplay/>:null
-        }
+            {activeTab === 'Answer' && <AnswerDisplay searchInputRecord={searchInputRecord} />}
+            {activeTab === 'Images' && (
+                <div className="mt-6 text-center py-12">
+                    <LucideImage className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">Image search coming soon!</p>
+                </div>
+            )}
+            {activeTab === 'Videos' && (
+                <div className="mt-6 text-center py-12">
+                    <LucideVideo className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">Video search coming soon!</p>
+                </div>
+            )}
+            {activeTab === 'Sources' && (
+                <div className="mt-6 text-center py-12">
+                    <LucideList className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">Source citations coming soon!</p>
+                </div>
+            )}
         </div>
 
     </div>

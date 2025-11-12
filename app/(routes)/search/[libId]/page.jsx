@@ -17,9 +17,13 @@ function SearchQueryResult() {
             .from('library')
             .select('*')
             .eq('libId',libId)
-        console.log(library[0])
-        setSearchInputRecord(library[0])
+        
+        if (library && library.length > 0) {
+            console.log(library[0])
+            setSearchInputRecord(library[0])
+        }
     }
+    
     return (
         <div>
             <Header searchInputRecord={searchInputRecord}/>

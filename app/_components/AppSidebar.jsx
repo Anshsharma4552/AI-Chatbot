@@ -30,11 +30,6 @@ const MenuOptions=[
         title: 'Library',
         icon: GalleryHorizontalEnd,
         path: '/library'
-    },
-    {
-        title: 'Sign In',
-        icon: LogIn,
-        path: '/sign-in'
     }
 ]
 function AppSidebar() {
@@ -63,6 +58,16 @@ function AppSidebar() {
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}
+                    {!user && (
+                        <SidebarMenuItem>
+                            <SidebarMenuButton asChild className={`p-5 py-6 hover:bg-transparent hover:font-bold ${path?.includes('/sign-in') && 'font-bold'}`}>
+                                <a href='/sign-in'>
+                                    <LogIn className='h-7 w-8'/>
+                                    <span className='text-lg'>Sign In</span>
+                                </a>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    )}
                 </SidebarMenu>
                 {!user? <SignUpButton mode='modal'>
                     <Button className={'rounded-full mx-4 mt-4 bg-[#1C7483] hover:bg-gray-200 hover:text-black cursor-pointer'}>Sign Up</Button>
